@@ -1,0 +1,129 @@
+. "@contlib@"
+
+
+__pgcont_cfg()
+{
+    case "$1" in
+    "pgdata")
+        echo "@pgdata@" ;;
+    "pgconf")
+        echo "$(__pgcont_cfg pgdata)/postgresql.conf" ;;
+    "pgcontconf")
+        echo "$(__pgcont_cfg pgdata)/postgresql-container.conf" ;;
+    *)
+        echo "unknown config option '$1'"
+    esac
+}
+
+
+pgcont_config_init()
+{
+    local pgconf="$(__pgcont_cfg pgconf)"
+
+    test -f "$pgconf" || {
+        cont_error "$(__pgcont_cfg pgdata) dir does not seem to be initialized"
+        return 1
+    }
+
+    touch "$(__pgcont_cfg pgcontconf)"
+
+    grep -q "Container specific configuration" "$pgconf" && return 0
+
+    cat >> "$pgconf" <<EOF
+
+# Container specific configuration
+include 'postgresql-container.conf'
+EOF
+}
+
+
+# CONT_POSTGRESQL_CONFIG_SET CONFIG_OPTION VALUE
+# ----------------------------------------------
+pgcont_config_set_option()
+{
+    local cf="$(__pgcont_cfg pgcontconf)"
+    test -f "$cf" || {
+        pgcont_config_init || return 1
+    }
+
+    local key="$1"
+    local value="$2"
+    local hit=false
+
+    test "$#" -lt 2 && {
+        cont_error "not enough parameters for '$FUNCNAME'"
+        return 1
+    }
+
+    cp "$cf"{,~} || {
+        cont_error "can't write into '$cf~' file"
+        return 1
+    }
+
+    while read line; do
+        if [[ $line =~ ^(#[[:space:]]*)?$key[[:space:]]*= ]]; then
+            if $hit; then
+                cont_warn "multiple occurences of '$key' in '$cf'," \
+                          "only the first is adjusted and others are commented"
+                continue
+            fi
+            echo "$key = $value"
+            hit=:
+        else
+            echo "$line"
+        fi
+    done < "$cf~" > "$cf" || {
+        cont_error "can't configure '$cf'"
+        return 1
+    }
+
+    $hit || echo "$key = $value" >> "$cf" || {
+        cont_error "can't append to '$cf'"
+        return 1
+    }
+
+    return 0
+}
+
+
+__pgcont_config_cb_parse_var()
+{
+    local key="$1"
+    local value="$2"
+    pgcont_config_set_option "$key" "$value"
+}
+
+
+pgcont_config_use_var()
+{
+    cont_parser_simple_config "$1" __pgcont_config_cb_parse_var \
+        || return 1
+}
+
+
+cont_postgresql_cb_conf_change()
+{
+    local key="$1"
+    local value="$2"
+    local file="$3"
+    local hit=false
+
+    test -f "$file" || touch "$file"
+    cp "$file"{,~}
+
+    while read line; do
+        if [[ $line =~ ^(#[[:space:]]*)?$key[[:space:]]*= ]]; then
+            if $hit; then
+                cont_warn "multiple occurences of '$key' in '$file', !"
+                echo "# [auto-comment] # $line"
+                continue
+            fi
+            echo "$key = $value"
+            hit=:
+        else
+            echo "$line"
+        fi
+    done < "$file~" > "$file"
+
+    $hit || echo "$key = $value" >> "$file"
+}

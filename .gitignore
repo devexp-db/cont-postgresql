@@ -1,0 +1,17 @@
+# current dir
+/.inst
+/.test-data-dir
+/aclocal.m4
+/acinclude.m4
+/autom4te.cache
+/build-aux
+/compile
+/config.guess
+/config.status
+/config.log
+
+# general
+*.tar.gz
+cont-postgresql.sh
+Makefile
+Makefile.in
