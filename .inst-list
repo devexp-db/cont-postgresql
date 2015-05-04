@@ -1,0 +1,8 @@
+./var/lib/pgsql/data/.container_internal
+./usr/libexec/cont-postgresql-exec
+./usr/libexec/cont-postgresql-preexec
+./usr/libexec/cont-postgresql-initdb
+./usr/bin/cont-postgresql-cmd
+./usr/share/cont-postgresql/
+./usr/share/cont-postgresql/cont-postgresql.sh
+./usr/share/cont-entry/postgresql.sh

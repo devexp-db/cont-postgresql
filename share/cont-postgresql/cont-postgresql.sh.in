@@ -1,38 +1,67 @@
 . "@contlib@"
 
 
-__pgcont_cfg()
+pgcont_opt()
 {
-    case "$1" in
-    "pgdata")
-        echo "@pgdata@" ;;
-    "pgconf")
-        echo "$(__pgcont_cfg pgdata)/postgresql.conf" ;;
-    "pgcontconf")
-        echo "$(__pgcont_cfg pgdata)/postgresql-container.conf" ;;
-    *)
-        echo "unknown config option '$1'"
-    esac
+    echo "${__cont_postgresql_config[$1]}"
+}
+
+
+pgcont_opt_check()
+{
+    test x"${__cont_postgresql_config[$1]}" = x"$2"
+}
+
+
+__pgcont_cb_opts()
+{
+    __cont_postgresql_config[$1]=$2
+}
+
+
+__pgcont_load_config()
+{
+    test -r "/var/lib/pgsql/.cont-postgresql-environment" \
+        && . /var/lib/pgsql/.cont-postgresql-environment
+
+    local config="\
+        assert_external_data    = true ;
+        clear_pgdata_pidfile    = false ;
+
+        pgdata                  = @pgdata@ ;
+        pghba                   = @pgdata@/pg_hba.conf ;
+        pghome                  = @pghome@ ;
+        pgconf                  = @pgdata@/postgresql.conf ;
+        pgcontconf              = @pgdata@/postgresql-container.conf ;
+        pidfile                 = @pgdata@/postmaster.pid  ;
+        $POSTGRESQL_CONTAINER_OPTS
+    "
+
+    cont_parser_simple_config config __pgcont_cb_opts
 }
 
 
 pgcont_config_init()
 {
-    local pgconf="$(__pgcont_cfg pgconf)"
+    local pgconf="$(pgcont_opt pgconf)"
 
     test -f "$pgconf" || {
-        cont_error "$(__pgcont_cfg pgdata) dir does not seem to be initialized"
+        cont_error "$(pgcont_opt pgdata) dir does not seem to be initialized"
         return 1
     }
 
-    touch "$(__pgcont_cfg pgcontconf)"
+    # Make sure that the 'pgcontconf' exists after pgcont_config_init.
+    touch "$(pgcont_opt pgcontconf)"
 
-    grep -q "Container specific configuration" "$pgconf" && return 0
+    local msg="Container specific configuration"
 
+    # Already initialized?
+    grep -q "$msg" "$pgconf" && return 0
+
+    # No inclusion specified yet.
     cat >> "$pgconf" <<EOF
-
-# Container specific configuration
-include 'postgresql-container.conf'
+# $msg
+include '$(pgcont_opt pgcontconf)'
 EOF
 }
 
@@ -41,7 +70,7 @@ EOF
 # ----------------------------------------------
 pgcont_config_set_option()
 {
-    local cf="$(__pgcont_cfg pgcontconf)"
+    local cf="$(pgcont_opt pgcontconf)"
     test -f "$cf" || {
         pgcont_config_init || return 1
     }
@@ -127,3 +156,31 @@ cont_postgresql_cb_conf_change()
 
     $hit || echo "$key = $value" >> "$file"
 }
+
+
+pgcont_check_external_storage()
+{
+    local pgdata=$(pgcont_opt pgdata)
+
+    cont_debug3 "working with: $pgdata"
+
+    if pgcont_opt_check assert_external_data false; then
+        /usr/bin/rm -rf "$pgdata/.container_internal"
+        return 0
+    fi
+
+    local msg="\
+You plan to run the data directory '$pgdata' from container.  Please run the
+image like 'docker run -v YOUR_DIR:$pgdata'.  Or use the
+'assert_external_data = false' option in POSTGRESQL_CONTAINER_OPTS.  For more
+info see the 'cont-help' command output."
+
+    test -f "$pgdata/.container_internal" \
+        && cont_error "$msg" \
+        && return 1
+
+    return 0
+}
+
+declare -A __cont_postgresql_config
+__pgcont_load_config

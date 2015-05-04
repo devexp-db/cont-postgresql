@@ -15,5 +15,10 @@ _AX_TEXT_TPL_ARG_VAR([conthookdir], ['${datadir}'],
 _AX_TEXT_TPL_ARG_VAR([contlib], ['${datadir}/cont-lib/cont-lib.sh'],
                      [container library path])
 _AX_TEXT_TPL_ARG_VAR([pgdata], ['/var/lib/pgsql/data'])
+_AX_TEXT_TPL_ARG_VAR([pghome], ['/var/lib/pgsql'])
+_AX_TEXT_TPL_ARG_VAR([contentrydir], ['${datadir}/cont-entry'])
+
+cont_script_header='cont_debug "command: $$0 $$*"'
+_AX_TEXT_TPL_SUBST([cont_script_header])
 
 AC_OUTPUT

@@ -67,6 +67,7 @@ __ax_text_tpl_default_variables="\
     mandir
     oldincludedir
     pdfdir
+    pkgdatadir
     prefix
     psdir
     sbindir

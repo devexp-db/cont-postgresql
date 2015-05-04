@@ -1,0 +1,16 @@
+# As we tend to support systemd in container, we need to let systemd-driven
+# service know about container-runtime environment variables.  We do that via
+# ~/.cont-SERVICE-environment (sourceable)  shell script.
+
+# Users are really discouraged to use 'POSTGRESQL_ADMIN_PASSWORD', but its
+# still needed for convenience.  We remove the environment file before
+# the PostgreSQL server starts anyway.
+
+__env_vars="
+    POSTGRESQL_ADMIN_PASSWORD
+    POSTGRESQL_CONTAINER_OPTS
+"
+
+cont_store_env "$__env_vars" "@pghome@/.cont-postgresql-environment"
+
+unset __env_vars

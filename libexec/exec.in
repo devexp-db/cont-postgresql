@@ -1,0 +1,7 @@
+#!/bin/bash
+
+. @pkgdatadir@/cont-postgresql.sh
+
+@cont_script_header@
+
+exec postgres -D "$(pgcont_opt pgdata)"

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# We split this file into 'preexec' and 'exec' to match what is done in
+# systemd service file (ExecStart & ExecStartPre), to alow easier re-using of
+# those scripts.
+
+. @pkgdatadir@/cont-postgresql.sh
+
+@cont_script_header@
+
+@libexecdir@/cont-postgresql-preexec \
+    && exec @libexecdir@/cont-postgresql-exec
