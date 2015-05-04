@@ -40,4 +40,6 @@ EOF
 
 pgcont_config_set_option listen_addresses "'*'"
 
+pgcont_config_use_var POSTGRESQL_CONFIG
+
 cont_source_hooks postinitdb

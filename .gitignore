@@ -11,6 +11,7 @@
 /config.log
 
 # general
+*.service
 *.tar.gz
 cont-postgresql.sh
 Makefile

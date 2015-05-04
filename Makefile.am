@@ -11,6 +11,17 @@ include share/cont-postgresql/Makefile.inc
 
 CLEANFILES = $(GENERATED_FILES)
 
+service		= postgresql-container.service
+service_in	= postgresql-container.service.in
+
+GENERATED_FILES += postgresql-container.in
+EXTRA_DIST += $(service_in)
+
+systemdunits_DATA = $(service)
+
+$(service): $(service_in) $(text_tpl_deps)
+	$(text_tpl_gen_script)
+
 generate_docker_tarball:
 	./configure --prefix=/usr
 	make

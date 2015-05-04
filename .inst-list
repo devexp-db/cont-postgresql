@@ -6,3 +6,4 @@
 ./usr/share/cont-postgresql/
 ./usr/share/cont-postgresql/cont-postgresql.sh
 ./usr/share/cont-entry/postgresql.sh
+./usr/lib/systemd/system/postgresql-container.service
