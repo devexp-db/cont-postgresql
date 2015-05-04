@@ -6,6 +6,11 @@
 # still needed for convenience.  We remove the environment file before
 # the PostgreSQL server starts anyway.
 
+test x1 = x"$$" \
+    && test x0 = x"$PPID" \
+    && test x0 = x"$UID" \
+    || return 0
+
 __env_vars="
     POSTGRESQL_ADMIN_PASSWORD
     POSTGRESQL_CONFIG
