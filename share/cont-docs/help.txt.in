@@ -10,12 +10,13 @@ necessary.
 
 Basic concepts
 --------------
-While starting PostgreSQL in container, your data will initialized automatically
-unless you provided already initialized data volume.  That allows you to do
-'initdb && start' inside container by single command.
-
 We try to push you to mount PostgreSQL datadir from host machine (see
 'assert_external_data' option below).
+
+While starting PostgreSQL in container, your database datadir will be
+initialized automatically (unless you provided already initialized volume).
+That way we allowed you to do 'initdb && start' of the container PostgreSQL
+server by one command.
 
 We also try to avoid starting concurrent servers running against the same
 datadir volume, see the 'clear_pgdata_pidfile' option.
@@ -42,9 +43,10 @@ allow you to access admin's account under host's 'postgres' UID:
     Type "help" for help
     postgres=#
 
-Additionally, you may start other container with command
-'docker run --volumes-from YOUR_POSTGRESQL_CONTAINER_ID', then, from inside the
-new container you'll have admin access without password:
+Additionally, with /var/run/postgresql volume, you may start other container
+with command like 'docker run --volumes-from YOUR_POSTGRESQL_CONTAINER_ID',
+and then, from inside the new container you'll have admin access without
+password:
 
     $ id
     uid=26(postgres) gid=26(postgres) groups=26(postgres)
