@@ -6,6 +6,7 @@ EXTRA_DIST =
 
 include bin/Makefile.inc
 include libexec/Makefile.inc
+include share/cont-docs/Makefile.inc
 include share/cont-entry/Makefile.inc
 include share/cont-postgresql/Makefile.inc
 
