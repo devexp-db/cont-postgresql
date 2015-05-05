@@ -12,7 +12,7 @@ _AX_TEXT_TPL_INIT
 
 _AX_TEXT_TPL_ARG_VAR([conthookdir], ['${datadir}'],
                      [hook directory])
-_AX_TEXT_TPL_ARG_VAR([contlib], ['${datadir}/cont-lib/cont-lib.sh'],
+_AX_TEXT_TPL_ARG_VAR([contlib], ['${datadir}/cont-lib'],
                      [container library path])
 _AX_TEXT_TPL_ARG_VAR([pgdata], ['/var/lib/pgsql/data'])
 _AX_TEXT_TPL_ARG_VAR([pghome], ['/var/lib/pgsql'])

@@ -1,21 +1,22 @@
-. "@contlib@"
+. "@contlib@/cont-lib.sh"
+. "@contlib@/parser-simple-config.sh"
 
 
 pgcont_opt()
 {
-    echo "${__cont_postgresql_config[$1]}"
+    echo "${__pgcont_config[$1]}"
 }
 
 
 pgcont_opt_check()
 {
-    test x"${__cont_postgresql_config[$1]}" = x"$2"
+    test x"${__pgcont_config[$1]}" = x"$2"
 }
 
 
 __pgcont_cb_opts()
 {
-    __cont_postgresql_config[$1]=$2
+    __pgcont_config[$1]=$2
 }
 
 
@@ -130,34 +131,6 @@ pgcont_config_use_var()
 }
 
 
-cont_postgresql_cb_conf_change()
-{
-    local key="$1"
-    local value="$2"
-    local file="$3"
-    local hit=false
-
-    test -f "$file" || touch "$file"
-    cp "$file"{,~}
-
-    while read line; do
-        if [[ $line =~ ^(#[[:space:]]*)?$key[[:space:]]*= ]]; then
-            if $hit; then
-                cont_warn "multiple occurences of '$key' in '$file', !"
-                echo "# [auto-comment] # $line"
-                continue
-            fi
-            echo "$key = $value"
-            hit=:
-        else
-            echo "$line"
-        fi
-    done < "$file~" > "$file"
-
-    $hit || echo "$key = $value" >> "$file"
-}
-
-
 pgcont_check_external_storage()
 {
     local pgdata=$(pgcont_opt pgdata)
@@ -182,5 +155,5 @@ info see the 'cont-help' command output."
     return 0
 }
 
-declare -A __cont_postgresql_config
+declare -A __pgcont_config
 __pgcont_load_config

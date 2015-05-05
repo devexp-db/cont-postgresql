@@ -49,8 +49,13 @@ m4_define([sed_subst_var_pattern], [\\
 AC_DEFUN([_AX_TEXT_TPL_INIT], [
 
 __ax_text_tpl_default_variables="\
+    abs_builddir
+    abs_srcdir
+    abs_top_builddir
+    abs_top_srcdir
     bindir
     build_alias
+    builddir
     datarootdir
     datadir
     docdir
@@ -72,8 +77,10 @@ __ax_text_tpl_default_variables="\
     psdir
     sbindir
     sharedstatedir
+    srcdir
     sysconfdir
     target_alias
+    top_srcdir
     PACKAGE
     PACKAGE_BUGREPORT
     PACKAGE_NAME
