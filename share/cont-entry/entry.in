@@ -12,6 +12,7 @@ test x1 = x"$$" \
     || return 0
 
 __env_vars="
+    CONT_DEBUG
     POSTGRESQL_ADMIN_PASSWORD
     POSTGRESQL_CONFIG
     POSTGRESQL_CONTAINER_OPTS
