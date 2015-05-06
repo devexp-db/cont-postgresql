@@ -155,5 +155,14 @@ info see the 'cont-help' command output."
     return 0
 }
 
+
+pgcont_cleanup_environment()
+{
+    unset POSTGRESQL_CONTAINER_OPTS \
+          POSTGRESQL_ADMIN_PASSWORD \
+          POSTGRESQL_CONFIG
+}
+
+
 declare -A __pgcont_config
 __pgcont_load_config
