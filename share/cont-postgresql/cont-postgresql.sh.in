@@ -158,9 +158,12 @@ info see the 'cont-help' command output."
 
 pgcont_cleanup_environment()
 {
-    unset POSTGRESQL_CONTAINER_OPTS \
-          POSTGRESQL_ADMIN_PASSWORD \
-          POSTGRESQL_CONFIG
+    unset POSTGRESQL_ADMIN_PASSWORD \
+          POSTGRESQL_CONFIG \
+          POSTGRESQL_CONTAINER_OPTS \
+          POSTGRESQL_DATABASE \
+          POSTGRESQL_PASSWORD \
+          POSTGRESQL_USER
 }
 
 

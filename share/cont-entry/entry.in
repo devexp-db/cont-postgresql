@@ -16,6 +16,9 @@ __env_vars="
     POSTGRESQL_ADMIN_PASSWORD
     POSTGRESQL_CONFIG
     POSTGRESQL_CONTAINER_OPTS
+    POSTGRESQL_DATABASE
+    POSTGRESQL_PASSWORD
+    POSTGRESQL_USER
 "
 
 cont_store_env "$__env_vars" "@pghome@/.cont-postgresql-environment"

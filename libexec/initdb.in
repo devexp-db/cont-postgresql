@@ -42,4 +42,26 @@ pgcont_config_set_option listen_addresses "'*'"
 
 pgcont_config_use_var POSTGRESQL_CONFIG
 
+if test -n "$POSTGRESQL_DATABASE" \
+   && test -n "$POSTGRESQL_USER" \
+   && test -n "$POSTGRESQL_PASSWORD"
+then
+    # We need to setup .pgpass file.  On clean image, no .pgpass exists and we
+    # count with that.
+    if test -n "$POSTGRESQL_ADMIN_PASSWORD"; then
+        # According to this:
+        # http://www.postgresql.org/message-id/1324323646-sup-3128@alvh.no-ip.org
+        # We should *not* escape if we run with pre-9.2 psql.
+        echo "localhost:*:postgres:postgres:${POSTGRESQL_ADMIN_PASSWORD//:/\\:}" \
+            > "@pghome@/.pgpass"
+        chmod 600 "@pghome@/.pgpass"
+    fi
+    pgcont_server_start_local
+    pgcont_create_simple_db "$POSTGRESQL_DATABASE" "$POSTGRESQL_USER" \
+                            "$POSTGRESQL_PASSWORD"
+    pgcont_server_stop
+
+    rm -rf "@pghome@/.pgpass"
+fi
+
 cont_source_hooks postinitdb

@@ -125,4 +125,11 @@ POSTGRESQL_CONTAINER_OPTS="key = value [; key = value [...]]"
         you.  You may consider setting this to 'true' everytime if you can
         guarantee that the data will not be used concurrently.
 
+POSTGRESQL_DATABASE=STRING
+POSTGRESQL_USER=STRING
+POSTGRESQL_PASSWORD=STRING
+    Only when *all* these three variables are set during initdb-time, the
+    initialization logic will create one additional database of given name, owned
+    by given user.
+
 [1] http://www.postgresql.org/docs/9.2/static/auth-pg-hba-conf.html
