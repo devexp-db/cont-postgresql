@@ -164,5 +164,52 @@ pgcont_cleanup_environment()
 }
 
 
+# PGCONT_SERVER_START_LOCAL
+# -------------------------
+# Start postgresql server against @pgdata@
+# in background listening only on localhost.
+pgcont_server_start_local()
+{
+    pg_ctl -D "@pgdata@" -w start -o '-h localhost' "$@"
+}
+
+
+# PGCONT_SERVER_STOP
+# ------------------
+# Stop background postgres process running against
+# @pgdata@.
+pgcont_server_stop()
+{
+    pg_ctl -D "@pgdata@" stop
+}
+
+
+__pgcont_select_user()
+{
+    psql -d postgres --set=user="$1" -tA \
+        <<<"SELECT 1 FROM pg_roles WHERE rolname = :'user'"
+}
+
+
+__pgcont_passwd()
+{
+    psql -d postgres --set=user="$1" --set=pass="$2" -tA \
+        <<<"ALTER USER :\"user\" WITH ENCRYPTED PASSWORD :'pass';"
+}
+
+
+# PGCONT_CREATE_SIMPLE_DB DBNAME DBUSER [DBPASS]
+# ----------------------------------------------
+# Requires running server!
+pgcont_create_simple_db()
+(
+    set -e
+    db="$1" user="$2" pass="$3"
+    test -z "$(__pgcont_select_user "$user")" && createuser "$user" -D
+    test -n "$pass" && __pgcont_passwd "$user" "$pass" >/dev/null
+    createdb --owner "$user" "$db"
+)
+
+
 declare -A __pgcont_config
 __pgcont_load_config
