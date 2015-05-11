@@ -8,4 +8,9 @@ HOWTO:
 
     `$ make docker-build`
 
-
+BuildRequires:
+    distgen (https://github.com/devexp-db/distgen)
+    docker
+    make
+    tar (GNU tar)
+    wget
