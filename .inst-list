@@ -1,3 +1,4 @@
+--owner=root --group=root
 ./var/lib/pgsql/data/.container_internal
 ./usr/libexec/cont-postgresql-exec
 ./usr/libexec/cont-postgresql-preexec

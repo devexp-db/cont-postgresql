@@ -1,0 +1,45 @@
+maintainer: Pavel Raiskup <praiskup@redhat.com>
+
+expose: [5432]
+
+parts:
+  pkginstall:
+    data:
+      - type: "pkg"
+        action: "install"
+        packages: [ postgresql-server ]
+
+      # Reinstall glibc-common to fix locale issues (rhbz#1129697)
+      - type: "pkg"
+        action: "reinstall"
+        packages: ["glibc-common"]
+
+  volumes:
+    data:
+      - path: /var/lib/pgsql/data
+
+  addfiles:
+    data:
+      # TODO: cont-lib should be part of FROM image
+      - type: tarball
+        file: cont-lib.tar.gz
+
+      # TODO: this definitely should exist as system package in future
+      - type: tarball
+        file: cont-postgresql.tar.gz
+
+  commands:
+    data:
+      - type: shell
+        action: "systemctl disable getty.service console-getty.service"
+      - type: shell
+        action: "systemctl enable postgresql-container.service"
+      # For the default PostgreSQL container, we'll start cont-postgresql-cmd
+      # binary when cont-entry is executed.  Layers above us should replace
+      # this symlink!
+      - type: shell
+        action: "ln -s /usr/bin/cont-postgresql-cmd /usr/bin/cont-start"
+
+  footer:
+    entry: [/usr/bin/cont-entry]
+    user: postgres

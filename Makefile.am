@@ -16,7 +16,9 @@ service		= postgresql-container.service
 service_in	= postgresql-container.service.in
 
 GENERATED_FILES += postgresql-container.in
-EXTRA_DIST += $(service_in)
+EXTRA_DIST += \
+	$(service_in) \
+	.inst-list
 
 systemdunits_DATA = $(service)
 
