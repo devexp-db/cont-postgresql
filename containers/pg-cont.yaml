@@ -38,8 +38,9 @@ parts:
       # binary when cont-entry is executed.  Layers above us should replace
       # this symlink!
       - type: shell
-        action: "ln -s /usr/bin/cont-postgresql-cmd /usr/bin/cont-start"
+        action: !eval '"ln -s {0}/cont-postgresql-cmd {0}/cont-start".format(dirs["bindir"])'
 
   footer:
-    entry: [/usr/bin/cont-entry]
+    entry:
+    - !eval '"{0}/cont-entry".format(dirs["bindir"])'
     user: postgres
