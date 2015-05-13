@@ -35,12 +35,12 @@ parts:
       - type: shell
         action: "systemctl enable postgresql-container.service"
       # For the default PostgreSQL container, we'll start cont-postgresql-cmd
-      # binary when cont-entry is executed.  Layers above us should replace
-      # this symlink!
+      # binary when container-entrypoint is executed.  Layers above us should
+      # replace this symlink!
       - type: shell
-        action: !eval '"ln -s {0}/cont-postgresql-cmd {0}/cont-start".format(dirs["bindir"])'
+        action: !eval '"ln -s {0}/cont-postgresql-cmd {0}/container-start".format(dirs["bindir"])'
 
   footer:
     entry:
-    - !eval '"{0}/cont-entry".format(dirs["bindir"])'
+    - !eval '"{0}/container-entrypoint".format(dirs["bindir"])'
     user: postgres
