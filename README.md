@@ -4,7 +4,12 @@ PostgreSQL in container
 How to build Postgresql Docker image based on Fedora (RHEL) system and do quick
 testing:
 
-1. install [dg tool](https://github.com/devexp-db/distgen)
+1. build requirements:
+
+    * [dg tool](https://github.com/devexp-db/distgen) installed
+    * git
+    * GNU make
+    * docker installed and server running
 
 2. Clone git repository:
 
@@ -19,7 +24,7 @@ testing:
    ```
    $ make distro=fedora-22-x86_64
    $ cd output
-   $ docker build -t postgresql-fedora-22 .
+   $ sudo docker build -t postgresql-fedora-22 .
    ```
 
 4. Run the image:
