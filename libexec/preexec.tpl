@@ -41,7 +41,13 @@ test -f "$pidfile" \
     && exit 1
 
 # Run the checking script here manually, usually placed in ExecStartPre=.
+{% if config.os.id == "fedora" and config.os.version >= 22 or
+      config.os.id == "rhel" and config.os.version >= 8 -%}
+PGDATA="$(pgcont_opt pgdata)" {{ m.libexecdir}}/postgresql-check-db-dir \
+    postgresql-container || exit 1
+{%- else -%}
 {{ m.bindir }}/postgresql-check-db-dir "$(pgcont_opt pgdata)" || exit 1
+{%- endif %}
 
 # Pre-exec hooks.  Don't call from 'rh-cont-pg-exec' because that would not
 # be called from service file.
