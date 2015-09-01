@@ -20,13 +20,9 @@ parts:
 
   addfiles:
     data:
-      # TODO: cont-lib should be part of FROM image
-      - type: tarball
-        file: cont-lib.tar.gz
-
-      # TODO: this definitely should exist as system package in future
-      - type: tarball
-        file: cont-postgresql.tar.gz
+      - type: files
+        files: [ root ]
+        dest: /
 
   commands:
     data:
@@ -38,9 +34,13 @@ parts:
       # binary when container-entrypoint is executed.  Layers above us should
       # replace this symlink!
       - type: shell
-        action: !eval '"ln -s {0}/cont-postgresql-cmd {0}/container-start".format(dirs["bindir"])'
+        action: !eval '"ln -s {0}/cont-postgresql-cmd {0}/container-start".format(macros["bindir"])'
+      - type: shell
+        action: touch /var/lib/pgsql/data/.container_internal && chown 26:26 /var/lib/pgsql/data
+      - type: shell
+        action: !eval "macros['docker_container_build']"
 
   footer:
     entry:
-    - !eval '"{0}/container-entrypoint".format(dirs["bindir"])'
+    - !eval '"{0}/container-entrypoint".format(macros["bindir"])'
     user: postgres

@@ -5,14 +5,14 @@
 # To be used as a ExecStartPre= in service file (when systemd is used),
 # or on sysvinit to be called before exec.in.
 
-. @pkgdatadir@/cont-postgresql.sh
+. {{ m.pkgdatadir }}/cont-postgresql.sh
 
-@cont_script_header@
+{{ m.cont_script_header }}
 
 pgcont_check_external_storage || exit 1
 
 # Initialize the data directory when needed
-@libexecdir@/cont-postgresql-initdb || exit 1
+{{ m.libexecdir }}/cont-postgresql-initdb || exit 1
 
 # Note that PostgreSQL itself does not count with container scenario;  it uses
 # the postmaster.pid file to check whether some other PG server does not run
@@ -41,7 +41,7 @@ test -f "$pidfile" \
     && exit 1
 
 # Run the checking script here manually, usually placed in ExecStartPre=.
-@bindir@/postgresql-check-db-dir "$(pgcont_opt pgdata)" || exit 1
+{{ m.bindir }}/postgresql-check-db-dir "$(pgcont_opt pgdata)" || exit 1
 
 # Pre-exec hooks.  Don't call from 'rh-cont-pg-exec' because that would not
 # be called from service file.
@@ -49,7 +49,7 @@ cont_source_hooks preexec postgresql
 
 # Remove the environment file as late as possible.  We rather remove that file
 # because it may contain POSTGRESQL_ADMIN_PASSWORD.
-rm -f "@pghome@/.cont-postgresql-environment" || {
+rm -f "{{ m.pghome }}/.cont-postgresql-environment" || {
     cont_error "can't remove env file"
     exit 1
 }

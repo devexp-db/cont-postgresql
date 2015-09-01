@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. @pkgdatadir@/cont-postgresql.sh
+. {{ m.pkgdatadir }}/cont-postgresql.sh
 
 CONT_PROJECT=postgresql
 
@@ -53,15 +53,15 @@ then
         # http://www.postgresql.org/message-id/1324323646-sup-3128@alvh.no-ip.org
         # We should *not* escape if we run with pre-9.2 psql.
         echo "localhost:*:postgres:postgres:${POSTGRESQL_ADMIN_PASSWORD//:/\\:}" \
-            > "@pghome@/.pgpass"
-        chmod 600 "@pghome@/.pgpass"
+            > "{{ m.pghome }}/.pgpass"
+        chmod 600 "{{ m.pghome }}/.pgpass"
     fi
     pgcont_server_start_local
     pgcont_create_simple_db "$POSTGRESQL_DATABASE" "$POSTGRESQL_USER" \
                             "$POSTGRESQL_PASSWORD"
     pgcont_server_stop
 
-    rm -rf "@pghome@/.pgpass"
+    rm -rf "{{ m.pghome }}/.pgpass"
 fi
 
 cont_source_hooks postinitdb

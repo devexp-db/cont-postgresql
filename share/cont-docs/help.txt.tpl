@@ -73,20 +73,20 @@ All hooks are sourced/run by 'postgres' user ATM.  Note that only `*.sh'
 files (from directories described below) will be automatically sourced.  We
 follow the 'cont-lib' [2] directory hierarchy.
 
-@conthookdir@/cont-layer/postgresql/preinitdb
-@conthookdir@/cont-volume/postgresql/preinitdb
+{{ m.conthookdir }}/cont-layer/postgresql/preinitdb
+{{ m.conthookdir }}/cont-volume/postgresql/preinitdb
     Shell hooks from those directories will be sourced right before the
     automatic DB initialization.  This will happen _only_ if you run container
     with not yet initialized data volume.
 
-@conthookdir@/cont-layer/postgresql/postinitdb
-@conthookdir@/cont-volume/postgresql/postinitdb
+{{ m.conthookdir }}/cont-layer/postgresql/postinitdb
+{{ m.conthookdir }}/cont-volume/postgresql/postinitdb
     Shell hooks from those directories will be sourced immediately after the
     automatic DB initialization.  Similar to 'preinitdb', this will happen only
     if you run container against not yet initialized data volume.
 
-@conthookdir@/cont-layer/postgresql/preexec
-@conthookdir@/cont-volume/postgresql/preexec
+{{ m.conthookdir }}/cont-layer/postgresql/preexec
+{{ m.conthookdir }}/cont-volume/postgresql/preexec
     Those hooks will be called right before the PostgreSQL server start.  This
     will happen always, regardless of the data volume initialization step.
 
@@ -114,10 +114,10 @@ POSTGRESQL_CONTAINER_OPTS="key = value [; key = value [...]]"
 
     assert_external_data = true|false (default=true)
         For testing purposes, this will allow you to run this container without
-        specifying external data volume (@pgdata@ directory).
+        specifying external data volume ({{ m.pgdata }} directory).
 
     clear_pgdata_pidfile = true|false (default is false)
-        We refuse to start if the @pgdata@/postmaster.pid file
+        We refuse to start if the {{ m.pgdata }}/postmaster.pid file
         already exists.  This may either happen because you try to run two
         concurrent containers against the same data volume, or the file may be
         just a leftover from container/docker/postgresql failure.  If you are

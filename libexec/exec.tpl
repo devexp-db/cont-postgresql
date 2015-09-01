@@ -1,8 +1,8 @@
 #!/bin/bash
 
-. @pkgdatadir@/cont-postgresql.sh
+. {{ m.pkgdatadir }}/cont-postgresql.sh
 
-@cont_script_header@
+{{ m.cont_script_header }}
 
 pgcont_cleanup_environment
 

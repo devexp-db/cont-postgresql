@@ -1,5 +1,5 @@
-. "@contlib@/cont-lib.sh"
-. "@contlib@/parser-simple-config.sh"
+. "{{ m.contlib }}/cont-lib.sh"
+. "{{ m.contlib }}/parser-simple-config.sh"
 
 
 pgcont_opt()
@@ -29,12 +29,12 @@ __pgcont_load_config()
         assert_external_data    = true ;
         clear_pgdata_pidfile    = false ;
 
-        pgdata                  = @pgdata@ ;
-        pghba                   = @pgdata@/pg_hba.conf ;
-        pghome                  = @pghome@ ;
-        pgconf                  = @pgdata@/postgresql.conf ;
-        pgcontconf              = @pgdata@/postgresql-container.conf ;
-        pidfile                 = @pgdata@/postmaster.pid  ;
+        pgdata                  = {{ m.pgdata }} ;
+        pghba                   = {{ m.pgdata }}/pg_hba.conf ;
+        pghome                  = {{ m.pghome }} ;
+        pgconf                  = {{ m.pgdata }}/postgresql.conf ;
+        pgcontconf              = {{ m.pgdata }}/postgresql-container.conf ;
+        pidfile                 = {{ m.pgdata }}/postmaster.pid  ;
         $POSTGRESQL_CONTAINER_OPTS
     "
 
@@ -169,21 +169,21 @@ pgcont_cleanup_environment()
 
 # PGCONT_SERVER_START_LOCAL
 # -------------------------
-# Start postgresql server against @pgdata@
+# Start postgresql server against {{ m.pgdata }}
 # in background listening only on localhost.
 pgcont_server_start_local()
 {
-    pg_ctl -D "@pgdata@" -w start -o '-h localhost' "$@"
+    pg_ctl -D "{{ m.pgdata }}" -w start -o '-h localhost' "$@"
 }
 
 
 # PGCONT_SERVER_STOP
 # ------------------
 # Stop background postgres process running against
-# @pgdata@.
+# {{ m.pgdata }}.
 pgcont_server_stop()
 {
-    pg_ctl -D "@pgdata@" stop
+    pg_ctl -D "{{ m.pgdata }}" stop
 }
 
 

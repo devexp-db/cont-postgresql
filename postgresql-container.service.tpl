@@ -14,18 +14,18 @@ User=postgres
 Group=postgres
 
 # Location of database directory
-Environment=PGDATA=@pgdata@
+Environment=PGDATA={{ m.pgdata }}
 
 # Where to send early-startup messages from the server (before the logging
 # options of postgresql.conf take effect)
 # This is normally controlled by the global default set by systemd
 # StandardOutput=syslog
 
-ExecStartPre=@libexecdir@/cont-postgresql-preexec
+ExecStartPre={{ m.libexecdir }}/cont-postgresql-preexec
 
-ExecStart=@bindir@/pg_ctl start -D ${PGDATA} -s -w -t 270
-ExecStop=@bindir@/pg_ctl stop -D ${PGDATA} -s -m fast
-ExecReload=@bindir@/pg_ctl reload -D ${PGDATA} -s
+ExecStart={{ m.bindir }}/pg_ctl start -D ${PGDATA} -s -w -t 270
+ExecStop={{ m.bindir }}/pg_ctl stop -D ${PGDATA} -s -m fast
+ExecReload={{ m.bindir }}/pg_ctl reload -D ${PGDATA} -s
 
 # Give a reasonable amount of time for the server to start up/shut down
 TimeoutSec=300

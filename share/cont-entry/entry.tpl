@@ -21,6 +21,6 @@ __env_vars="
     POSTGRESQL_USER
 "
 
-cont_store_env "$__env_vars" "@pghome@/.cont-postgresql-environment"
+cont_store_env "$__env_vars" "{{ m.pghome }}/.cont-postgresql-environment"
 
 unset __env_vars
