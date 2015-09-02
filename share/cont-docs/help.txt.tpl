@@ -73,20 +73,20 @@ All hooks are sourced/run by 'postgres' user ATM.  Note that only `*.sh'
 files (from directories described below) will be automatically sourced.  We
 follow the 'cont-lib' [2] directory hierarchy.
 
-{{ m.conthookdir }}/cont-layer/postgresql/preinitdb
-{{ m.conthookdir }}/cont-volume/postgresql/preinitdb
+{{ m.contlayerhookdir }}/postgresql/preinitdb
+{{ m.contvolumehookdir }}/postgresql/preinitdb
     Shell hooks from those directories will be sourced right before the
     automatic DB initialization.  This will happen _only_ if you run container
     with not yet initialized data volume.
 
-{{ m.conthookdir }}/cont-layer/postgresql/postinitdb
-{{ m.conthookdir }}/cont-volume/postgresql/postinitdb
+{{ m.contlayerhookdir }}/postgresql/postinitdb
+{{ m.contvolumehookdir }}/postgresql/postinitdb
     Shell hooks from those directories will be sourced immediately after the
     automatic DB initialization.  Similar to 'preinitdb', this will happen only
     if you run container against not yet initialized data volume.
 
-{{ m.conthookdir }}/cont-layer/postgresql/preexec
-{{ m.conthookdir }}/cont-volume/postgresql/preexec
+{{ m.contlayerhookdir }}/postgresql/preexec
+{{ m.contvolumehookdir }}/postgresql/preexec
     Those hooks will be called right before the PostgreSQL server start.  This
     will happen always, regardless of the data volume initialization step.
 
@@ -133,3 +133,4 @@ POSTGRESQL_PASSWORD=STRING
     by given user.
 
 [1] http://www.postgresql.org/docs/9.2/static/auth-pg-hba-conf.html
+[2] https://github.com/devexp-db/cont-lib/blob/master/project.py
