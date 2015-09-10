@@ -7,3 +7,7 @@ DG      $(libexecdir)/cont-postgresql-initdb            tpl=libexec/initdb.tpl c
 DG      $(contdocdir)/postgresql.txt                    tpl=share/cont-docs/help.txt.tpl
 DG      $(contentry)/postgresql.sh                      tpl=share/cont-entry/entry.tpl
 DG      $(pkgdatadir)/cont-postgresql.sh                tpl=share/cont-postgresql/cont-postgresql.sh.tpl
+DG      $(pkgdatadir)/atomic/install.sh                 tpl=atomic/install.sh chmod=755
+DG      $(pkgdatadir)/atomic/uninstall.sh               tpl=atomic/uninstall.sh chmod=755
+DG      $(pkgdatadir)/atomic/include.sh                 tpl=atomic/include.sh
+CP      $(pkgdatadir)/atomic/template.service           atomic/template.service

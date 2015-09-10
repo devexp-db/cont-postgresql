@@ -132,5 +132,39 @@ POSTGRESQL_PASSWORD=STRING
     initialization logic will create one additional database of given name, owned
     by given user.
 
+
+Usage on Atomic host
+--------------------
+
+Systems derived from projectatomic.io usually include the `atomic` command that is
+used to run containers besides other things.  This image is prepared for atomic
+environment.
+
+To install a new service named `postgresql1` based on this image on such a
+system, run:
+
+    $ atomic install -n postgresql1 --opt2='-p 5432:5432' IMAGE_NAME
+
+Then to run the service, use the standard `systemctl` call:
+
+    $ systemctl start postgresql1.service
+
+In order to work with that service, you may either connect to exposed port 5432:
+
+    $ psql -h localhost
+
+Or run this command to connect locally:
+
+    $ atomic run -n postgresql1 IMAGE_NAME bash -c 'psql'
+
+To stop and uninstall the postgresql1 service, run:
+
+    $ systemctl stop postgresql1.service
+    $ atomic uninstall -n postgresql1 IMAGE_NAME
+
+
+References
+----------
+
 [1] http://www.postgresql.org/docs/9.2/static/auth-pg-hba-conf.html
 [2] https://github.com/devexp-db/cont-lib/blob/master/project.py
