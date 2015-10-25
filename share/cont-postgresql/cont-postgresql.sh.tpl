@@ -1,5 +1,5 @@
 . "{{ m.contlib }}/cont-lib.sh"
-. "{{ m.contlib }}/parser-simple-config.sh"
+. "{{ m.contlib }}/parser-simple-macro-config.sh"
 
 
 pgcont_opt()
@@ -29,16 +29,18 @@ __pgcont_load_config()
         assert_external_data    = true ;
         clear_pgdata_pidfile    = false ;
 
-        pgdata                  = {{ m.pgdata }} ;
-        pghba                   = {{ m.pgdata }}/pg_hba.conf ;
+        pgdatasubdir            = data ;
+        pgdatamountpoint        = {{ m.pgdata }}
+        pgdata                  = <pgdatamountpoint>/<pgdatasubdir> ;
+        pghba                   = <pgdata>/pg_hba.conf ;
         pghome                  = {{ m.pghome }} ;
-        pgconf                  = {{ m.pgdata }}/postgresql.conf ;
-        pgcontconf              = {{ m.pgdata }}/postgresql-container.conf ;
-        pidfile                 = {{ m.pgdata }}/postmaster.pid  ;
+        pgconf                  = <pgdata>/postgresql.conf ;
+        pgcontconf              = <pgdata>/postgresql-container.conf ;
+        pidfile                 = <pgdata>/postmaster.pid  ;
         $POSTGRESQL_CONTAINER_OPTS
     "
 
-    cont_parser_simple_config config __pgcont_cb_opts
+    cont_parser_simple_macro_config config __pgcont_cb_opts
 }
 
 
@@ -133,7 +135,7 @@ pgcont_config_use_var()
 
 pgcont_check_external_storage()
 {
-    local pgdata=$(pgcont_opt pgdata)
+    local pgdata=$(pgcont_opt pgdatamountpoint)
 
     cont_debug3 "working with: $pgdata"
 
@@ -149,6 +151,17 @@ image like 'docker run -v YOUR_DIR:$pgdata'.  Or use the
 info see the 'container-usage' command output."
 
     test -f "$pgdata/.container_internal" \
+        && cont_error "$msg" \
+        && return 1
+
+    local msg="
+Directory '$pgdata' seems to be initialized PG directory while it should
+be only bind-mountpoint.  We now support only <pgdatamountpoint>/<pgdatasubdir>
+pattern and by default the components are pgdatamountpoint = '/var/lib/pgsql/data'
+and pgdatasubdir = 'data'.  So please **make sure** you have '$pgdata' directory
+moved into $(pgcont_opt pgdata) before running the container."
+
+    test -f "$pgdata/PG_VERSION" \
         && cont_error "$msg" \
         && return 1
 
@@ -173,7 +186,7 @@ pgcont_cleanup_environment()
 # in background listening only on localhost.
 pgcont_server_start_local()
 {
-    pg_ctl -D "{{ m.pgdata }}" -w start -o '-h localhost' "$@"
+    pg_ctl -D "$(pgcont_opt pgdata)" -w start -o '-h localhost' "$@"
 }
 
 
@@ -183,7 +196,7 @@ pgcont_server_start_local()
 # {{ m.pgdata }}.
 pgcont_server_stop()
 {
-    pg_ctl -D "{{ m.pgdata }}" stop
+    pg_ctl -D "$(pgcont_opt pgdata)" stop
 }
 
 

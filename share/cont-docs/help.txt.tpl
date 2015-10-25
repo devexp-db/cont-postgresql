@@ -18,6 +18,10 @@ initialized automatically (unless you provided already initialized volume).
 That way we allowed you to do 'initdb && start' of the container PostgreSQL
 server by one command.
 
+Note that PostgreSQL in container uses /var/lib/pgsql/data/data directory, thus
+*not* the direct /var/lib/pgsql/data bind-mount-point.  Changing this location
+is not yet supported use-case.
+
 We also try to avoid starting concurrent servers running against the same
 datadir volume, see the 'clear_pgdata_pidfile' option.
 
