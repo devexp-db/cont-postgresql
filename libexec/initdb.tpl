@@ -14,6 +14,7 @@ cont_source_hooks preinitdb
 initdb_cmd=(initdb -D "$(pgcont_opt pgdata)" -U postgres)
 admin_method=peer
 if test -n "$POSTGRESQL_ADMIN_PASSWORD"; then
+    cont_info "setting up admin password"
     "${initdb_cmd[@]}" --pwfile=<(echo "$POSTGRESQL_ADMIN_PASSWORD") || exit 1
     admin_method=md5
 else
@@ -46,9 +47,11 @@ if test -n "$POSTGRESQL_DATABASE" \
    && test -n "$POSTGRESQL_USER" \
    && test -n "$POSTGRESQL_PASSWORD"
 then
+    cont_info "creating simple database '$POSTGRESQL_DATABASE'"
     # We need to setup .pgpass file.  On clean image, no .pgpass exists and we
     # count with that.
     if test -n "$POSTGRESQL_ADMIN_PASSWORD"; then
+        cont_debug "temporarily storing admin's password into ~/.pgpass"
         # According to this:
         # http://www.postgresql.org/message-id/1324323646-sup-3128@alvh.no-ip.org
         # We should *not* escape if we run with pre-9.2 psql.
