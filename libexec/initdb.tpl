@@ -7,7 +7,14 @@ CONT_PROJECT=postgresql
 test -z "$LANG" && export LANG=en_US.utf8
 
 # Already initialized?
-test -f "$(pgcont_opt pgdata)/PG_VERSION" && exit 0
+if test -f "$(pgcont_opt pgdata)/PG_VERSION"; then
+    test -n "$POSTGRESQL_ADMIN_PASSWORD" && {
+        cont_warn "Setting of \$POSTGRESQL_ADMIN_PASSWORD has no effect
+because the database is already initialized.
+"
+    }
+    exit 0
+fi
 
 cont_source_hooks preinitdb
 
