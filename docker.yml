@@ -41,13 +41,10 @@ parts:
       # binary when container-entrypoint is executed.  Layers above us should
       # replace this symlink!
       - type: shell
-        action: !eval '"ln -s {0}/cont-postgresql-cmd {0}/container-start".format(macros["bindir"])'
-      - type: shell
         action: touch /var/lib/pgsql/data/.container_internal && chown 26:26 /var/lib/pgsql/data
       - type: shell
-        action: !eval "macros['docker_container_build']"
+        action: !eval "macros['container_build']"
 
   footer:
-    entry:
-    - !eval '"{0}/container-entrypoint".format(macros["bindir"])'
+    entry: [!eval "macros['container_entrypoint']"]
     user: postgres

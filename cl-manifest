@@ -1,5 +1,5 @@
 DG      /Dockerfile spec=docker.yml                     gtpl=docker.tpl outputroot
-DG      $(bindir)/cont-postgresql-cmd                   tpl=bin/cmd.tpl chmod=755
+DG      $(container_cmd)                                tpl=bin/cmd.tpl chmod=755
 DG      $(unitdir)/postgresql-container.service         tpl=postgresql-container.service.tpl
 DG      $(libexecdir)/cont-postgresql-exec              tpl=libexec/exec.tpl chmod=755
 DG      $(libexecdir)/cont-postgresql-preexec           tpl=libexec/preexec.tpl chmod=755
