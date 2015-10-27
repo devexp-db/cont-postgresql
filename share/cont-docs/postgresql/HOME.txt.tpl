@@ -2,10 +2,15 @@
 Help page for PostgreSQL in container
 =====================================
 
-General documentation for PostgreSQL container usage.  Most of this file
-describes only proof-of-concept implemented ideas.  Be careful not to rely
-described API too much though we'll try to avoid any "API" changes unless
-necessary.
+General documentation for PostgreSQL container usage.  Most of this
+documentation describes only proof-of-concept implemented ideas.  Be careful not
+to rely described API too much because it is still expected to change very fast.
+
+Note that this is for {{ macros.cont_postgresql_version }} API
+(MAJOR.MINOR.FIX).  Any change in MAJOR part of version introduces backward
+incompatibility (you should take into account that interchanging MAJOR container
+with MAJOR+N container will need some manual changes in your tooling).  On the
+other hand, incrementing MINOR version just adds some new features.
 
 
 Basic concepts
