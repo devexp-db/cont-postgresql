@@ -10,7 +10,10 @@ test -z "$LANG" && export LANG=en_US.utf8
 if test -f "$(pgcont_opt pgdata)/PG_VERSION"; then
     test -n "$POSTGRESQL_ADMIN_PASSWORD" && {
         cont_warn "Setting of \$POSTGRESQL_ADMIN_PASSWORD has no effect
-because the database is already initialized.
+because the database is already initialized.  Consult
+$ docker exec $HOSTNAME container-help --component postgresql --topic \
+reset-admin-password
+documentation.
 "
     }
     exit 0
@@ -19,11 +22,9 @@ fi
 cont_source_hooks preinitdb
 
 initdb_cmd=(initdb -D "$(pgcont_opt pgdata)" -U postgres)
-admin_method=peer
 if test -n "$POSTGRESQL_ADMIN_PASSWORD"; then
     cont_info "setting up admin password"
     "${initdb_cmd[@]}" --pwfile=<(echo "$POSTGRESQL_ADMIN_PASSWORD") || exit 1
-    admin_method=md5
 else
     "${initdb_cmd[@]}" || exit 1
 fi
@@ -34,13 +35,13 @@ cat > "$(pgcont_opt pghba)" <<EOF
 # PostgreSQL Client Authentication Configuration File
 # ===================================================
 #
-# Note that this is auto-generated file by rhel-docker-initdb script.  If you
+# Note that this is auto-generated file by $0 script.  If you
 # wan't to change this file, the quick syntax documentation may be found in
 # /usr/share/pgsql/pg_hba.conf.sample file.
 
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
 # --------------------------------------------------------------------
-local   all             postgres                                $admin_method
+local   all             postgres                                peer
 local   all             all                                     md5
 host    all             all             ::/0                    md5
 host    all             all             0.0.0.0/0               md5

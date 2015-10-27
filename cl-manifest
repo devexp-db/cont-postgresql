@@ -12,3 +12,4 @@ DG      $(pkgdatadir)/atomic/uninstall.sh               tpl=atomic/uninstall.sh 
 DG      $(pkgdatadir)/atomic/include.sh                 tpl=atomic/include.sh
 CP      $(pkgdatadir)/atomic/template.service           atomic/template.service
 DG      $(component_docdir)/HOME.txt                    tpl=share/cont-docs/postgresql/HOME.txt.tpl
+CP      $(component_docdir)/reset-admin-password.txt    share/cont-docs/postgresql/reset-admin-password.txt
