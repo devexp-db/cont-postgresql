@@ -109,8 +109,8 @@ POSTGRESQL_PASSWORD=STRING
     by given user.
 
 
-Usage on Atomic host
---------------------
+Usage on Atomic host (tech-preview feature, not supported)
+----------------------------------------------------------
 
 Systems derived from projectatomic.io usually include the `atomic` command that is
 used to run containers besides other things.  This image is prepared for atomic
