@@ -31,149 +31,56 @@ We also try to avoid starting concurrent servers running against the same
 datadir volume, see the 'clear_pgdata_pidfile' option.
 
 
-Access your PostgreSQL admin account via /var/run socket
---------------------------------------------------------
+Basic usage
+-----------
 
-To avoid unnecessary random generation of admin's password (or passing the
-password down to container via environment variable), we rely on UNIX domain
-socket authentication _by default_ in PostgreSQL container.  It means that
-you'll need to have access to server's socket file either from host machine, or
-from other container (depends on where you need to have the admin access from).
+We suppose that your $UID is able to communicate with docker's socket file, if
+this is not truth -- some of the following actions will need 'sudo' (root
+privileges):
 
-To get the socket file out from your server container, specify
-'-v YOUR_DIR:/var/run/postgresql' option while you run 'docker run' command.
-Then, PostgreSQL container will create the socket file under YOUR_DIR which will
-allow you to access admin's account under host's 'postgres' UID:
+  1. Create *persistent* directory where PostgreSQL server should store
+     its data (you should make sure to have this properly backed up).
 
-    # # on your docker-host machine
-    # su - postgres
-    $ psql -h YOUR_DIR
-    psql (9.2.10)
-    Type "help" for help
-    postgres=#
+     $ mkdir data
 
-Additionally, with /var/run/postgresql volume, you may start other container
-with command like 'docker run --volumes-from YOUR_POSTGRESQL_CONTAINER_ID',
-and then, from inside the new container you'll have admin access without
-password:
+  2. Allow 'postgres' (from container) user writing into this directory:
 
-    $ id
-    uid=26(postgres) gid=26(postgres) groups=26(postgres)
-    $ psql
-    psql (9.2.10)
-    Type "help" for help
-    postgres=#
+     $ setfacl -m 'u:26:-wx' data
 
-Accessing admin account _with_ password
----------------------------------------
-We provide also support POSTGRESQL_ADMIN_PASSWORD environment variable for
-convenience if you don't care too much about its existence.  If you start your
-PostgreSQL server container with '-e POSTGRESQL_ADMIN_PASSWORD=your_pass' -
-during database initialization time - the auth method [1] for admin will be set
-to 'md5' with default password set to 'your_pass'.  With this, you'll be able to
-access DB admin account from everywhere, if you have host (IP) access to the
-server.
+  3. Run the container (if you are running SELinux on your Docker host machine,
+     make sure the :Z suffix is added to the volume):
 
+     $ docker run -d --name postgresql_test \
+            -v "$(pwd)/data:/var/lib/pgsql/data:Z" fedora/postgresql
+     1f8d36e192421c02d59baba7082adf13f975c35ba42e235e349574a0c049ed43
 
-Shell (bash) hooks
-------------------
+  4. Connect to the running container from host (obtain psql console):
 
-All hooks are sourced/run by 'postgres' user ATM.  Note that only `*.sh'
-files (from directories described below) will be automatically sourced.  We
-follow the 'cont-lib' [2] directory hierarchy.
+     $ docker exec -ti postgresql_test /bin/sh
+     bash-4.3$ psql -q
+     postgres=#
 
-{{ m.contlayerhookdir }}/postgresql/preinitdb
-{{ m.contvolumehookdir }}/postgresql/preinitdb
-    Shell hooks from those directories will be sourced right before the
-    automatic DB initialization.  This will happen _only_ if you run container
-    with not yet initialized data volume.
+  5. Having 'pgsql' installed on your host machine allows you to connect
+     to PostgreSQL server also without the 'docker exec' command:
 
-{{ m.contlayerhookdir }}/postgresql/postinitdb
-{{ m.contvolumehookdir }}/postgresql/postinitdb
-    Shell hooks from those directories will be sourced immediately after the
-    automatic DB initialization.  Similar to 'preinitdb', this will happen only
-    if you run container against not yet initialized data volume.
+{% raw %}
+     $ docker inspect --format '{{ .NetworkSettings.IPAddress }}' \
+            postgresql_test
+{% endraw %}
+     172.17.1.189
+     $ psql -h 172.17.1.189
+     Password:
 
-{{ m.contlayerhookdir }}/postgresql/preexec
-{{ m.contvolumehookdir }}/postgresql/preexec
-    Those hooks will be called right before the PostgreSQL server start.  This
-    will happen always, regardless of the data volume initialization step.
-
-Environment variables
----------------------
-
-Those are expected to be specified by the docker run -e option, for example
-'docker run -e CONT_DEBUG=2'.
-
-POSTGRESQL_ADMIN_PASSWORD=STRING                        (initdb-time only)
-    String value will be set as admin's ('postgres' user) password.  This also
-    disables the 'ident' [1] authentication method for administrator triggers
-    the 'md5' method.  Users are encouraged to avoid this variable because the
-    admin password exists in container forever.  If you really need to use this
-    variable, consider immediate container shut-down and start of new container
-    (with already initialized DB) without this variable.
-
-POSTGRESQL_CONFIG="key = value [; key = value [...]]"   (initdb-time only)
-    Content of this variable is parsed and added into
-    'data/postgresql-container.conf' configuration file 1:1, this file will be
-    automatically included by the 'data/postgresql.conf'.
-
-POSTGRESQL_CONTAINER_OPTS="key = value [; key = value [...]]"
-    Via this variable you may adjust container behavior.
-
-    assert_external_data = true|false (default=true)
-        For testing purposes, this will allow you to run this container without
-        specifying external data volume ({{ m.pgdata }} directory).
-
-    clear_pgdata_pidfile = true|false (default is false)
-        We refuse to start if the {{ m.pgdata }}/postmaster.pid file
-        already exists.  This may either happen because you try to run two
-        concurrent containers against the same data volume, or the file may be
-        just a leftover from container/docker/postgresql failure.  If you are
-        100% sure the file is leftover, this option will clear the pidfile for
-        you.  You may consider setting this to 'true' everytime if you can
-        guarantee that the data will not be used concurrently.
-
-POSTGRESQL_DATABASE=STRING
-POSTGRESQL_USER=STRING
-POSTGRESQL_PASSWORD=STRING
-    Only when *all* these three variables are set during initdb-time, the
-    initialization logic will create one additional database of given name, owned
-    by given user.
+     You can see that you are able to connect!  But there is no default
+     user/password/db (nor even admin password) available at this time.  How to
+     setup this, see the 'Advanced usage' documentation.
 
 
-Usage on Atomic host
---------------------
+Advanced usage
+--------------
 
-Systems derived from projectatomic.io usually include the `atomic` command that is
-used to run containers besides other things.  This image is prepared for atomic
-environment.
+To keep this starting document rather shorter, we moved the rest of
+documentation into:
 
-To install a new service named `postgresql1` based on this image on such a
-system, run:
-
-    $ atomic install -n postgresql1 --opt2='-p 5432:5432' IMAGE_NAME
-
-Then to run the service, use the standard `systemctl` call:
-
-    $ systemctl start postgresql1.service
-
-In order to work with that service, you may either connect to exposed port 5432:
-
-    $ psql -h localhost
-
-Or run this command to connect locally:
-
-    $ atomic run -n postgresql1 IMAGE_NAME bash -c 'psql'
-
-To stop and uninstall the postgresql1 service, run:
-
-    $ systemctl stop postgresql1.service
-    $ atomic uninstall -n postgresql1 IMAGE_NAME
-
-
-References
-----------
-
-[1] http://www.postgresql.org/docs/9.2/static/auth-pg-hba-conf.html
-[2] https://github.com/devexp-db/cont-lib/blob/master/project.py
+$ docker run --rm fedora/postgresql container-help --component postgresql \
+    --topic advanced

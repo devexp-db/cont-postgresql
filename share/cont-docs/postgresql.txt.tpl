@@ -6,16 +6,18 @@ API Version:  {{ m.cont_postgresql_version }}
 
 Documentation
 -------------
+
+You are encouraged to install this alias into your environment:
+
+  $ alias pgcont_help='docker run --rm THIS_IMAGE container-help --component postgresql'
+
 Please consult documentation for PostgreSQL component via:
 
-  $ docker run --rm IMAGE container-help --component postgresql
+  $ pgcont_help
 
-NEWS
-----
-$ pgcont_help='docker run --rm IMAGE container-help --component postgresql'
-$ pgcont_help --topic NEWS
+NEWS (changes in container layout) can be found in:
 
-Latest changes are available under this command:
+  $ pgcont_help --topic NEWS
 
 Bug-reporting:
 --------------
