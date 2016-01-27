@@ -18,6 +18,9 @@ parts:
 
       # Reinstall glibc-common to fix locale issues (rhbz#1129697)
       - type: "pkg"
+        action: "update"
+        packages: ["glibc-common"]
+      - type: "pkg"
         action: "reinstall"
         packages: ["glibc-common"]
 
