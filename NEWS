@@ -1,6 +1,13 @@
 News in 1.0.2
 
-* The default help message is able to reference appropriate image name.
+* New features:
+
+  - the default help message is able to reference appropriate image name
+
+* Bugfixes:
+
+  - running via containerized systemd again works, this is better documented
+
 
 New in 1.0.1
 
