@@ -37,7 +37,7 @@ parts:
   commands:
     data:
       - type: shell
-        action: "systemctl disable getty.service console-getty.service"
+        action: "systemctl disable console-getty.service"
       - type: shell
         action: "systemctl enable postgresql-container.service"
       # For the default PostgreSQL container, we'll start cont-postgresql-cmd
