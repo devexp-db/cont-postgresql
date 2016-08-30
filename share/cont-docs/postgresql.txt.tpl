@@ -9,7 +9,7 @@ Documentation
 
 You are encouraged to install this alias into your environment:
 
-  $ alias pgcont_help='docker run --rm THIS_IMAGE container-help --component postgresql'
+  $ alias pgcont_help='docker run --rm {{ m.docker_main_tag }} container-help --component postgresql'
 
 Please consult documentation for PostgreSQL component via:
 
